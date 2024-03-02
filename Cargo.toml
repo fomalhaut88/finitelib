@@ -5,6 +5,7 @@ edition = "2021"
 authors = ["Alexander Khlebushchev"]
 license = "MIT"
 repository = "https://github.com/fomalhaut88/finitelib"
+description = "A Rust library that implements multiprecision operations and some math entities over them: finite groups, finite fields, euclidean rings, polynomials."
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
