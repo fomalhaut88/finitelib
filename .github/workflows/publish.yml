@@ -1,8 +1,8 @@
 on:
   push:
-    tags:        
-      - '*'
-  workflow_dispatch:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 name: Publish
 
