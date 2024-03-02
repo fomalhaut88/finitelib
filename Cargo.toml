@@ -1,0 +1,12 @@
+[package]
+name = "finitelib"
+version = "0.1.0"
+edition = "2021"
+authors = ["Alexander Khlebushchev"]
+license = "MIT"
+repository = "https://github.com/fomalhaut88/finitelib"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "0.8.5"
