@@ -1,7 +1,27 @@
 //! This module implements operations over polynomials over a field. 
 //!
 //! A polynomial is represented as a vector of entities that are elements 
-//! of a field.
+//! of the field. Also `Polynomial` naturally implements `EuclideanRing`.
+//!
+//! Example:
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::polynomial::Polynomial;
+//! use finitelib::common::fields::Ff64;
+//!
+//! let poly = Polynomial::new(&Ff64);
+//!
+//! let mut p1 = vec![5.0, 10.0, -3.0, 2.0];  // 5 + 10x - 3x^2 + 2x^3
+//! let p2 = vec![1.0, 2.0, 1.0];  // 1 + 2x + x^2
+//!
+//! let p3 = poly.divrem(&mut p1, &p2).unwrap();
+//!
+//! assert_eq!(p1, vec![12.0, 22.0, 0.0, 0.0]);  // Remainder: 12 + 22x
+//! assert_eq!(p3, vec![-7.0, 2.0]);  // Result: -7 + 2x
+//!
+//! // Check: (1 + 2x + x^2) * (-7 + 2x) + (12 + 22x) = 5 + 10x - 3x^2 + 2x^3
+//! assert_eq!(poly.add(&poly.mul(&p2, &p3), &p1), vec![5.0, 10.0, -3.0, 2.0]);
+//! ```
 
 use std::cmp;
 
@@ -9,27 +29,31 @@ use crate::field::Field;
 use crate::ring::EuclideanRing;
 
 
-/// Polynomial over a field that implements EuclideanRing so all te operations
+/// Polynomial over a field that implements EuclideanRing so all the operations
 /// over polynomials are available including addition, subtraction, 
-/// multiplication, division with remainder, euclidean algorithm.
+/// multiplication, division with remainder, euclidean extended algorithm.
 #[derive(Debug, Clone)]
-pub struct Polynomial<F>(F);
+pub struct Polynomial<'a, F>(&'a F);
 
 
-impl<F> Polynomial<F> {
-    pub fn new(field: F) -> Self {
+impl<'a, F> Polynomial<'a, F> {
+    /// Create a new polynomial from the given field.
+    pub fn new(field: &'a F) -> Self {
         Self(field)
     }
 }
 
 
-impl<T, F> Polynomial<F> where 
+impl<'a, T, F> Polynomial<'a, F> where 
         T: Clone, 
         F: Field<Item = T> {
+    /// Gets the reference to the field.
     pub fn field(&self) -> &F {
         &self.0
     }
 
+    /// Gets the degree of the polynomial (the highest index of 
+    /// non-zero element).
     pub fn degree(&self, a: &Vec<T>) -> Option<usize> {
         let mut size = a.len();
         while size > 0 {
@@ -41,6 +65,7 @@ impl<T, F> Polynomial<F> where
         if size == 0 { None } else { Some(size - 1) }
     }
 
+    /// Drops leading zero elements.
     pub fn normalize(&self, a: &mut Vec<T>) {
         let size = self.degree(a)
             .map(|degree| degree + 1)
@@ -48,10 +73,12 @@ impl<T, F> Polynomial<F> where
         a.truncate(size);
     }
 
+    /// Resizes the polynomial adding zeros or cutting off the extra elements.
     pub fn resize(&self, a: &mut Vec<T>, size: usize) {
         a.resize(size, self.0.zero());
     }
 
+    /// Assigns all the elements in the polunomial with the given constant.
     pub fn mul_assign_const(&self, a: &mut Vec<T>, c: &T) {
         for e in a.iter_mut() {
             self.0.mul_assign(e, c);
@@ -60,7 +87,7 @@ impl<T, F> Polynomial<F> where
 }
 
 
-impl<T, F> EuclideanRing for Polynomial<F>
+impl<'a, T, F> EuclideanRing for Polynomial<'a, F>
         where T: Clone + PartialEq,
               F: Field<Item = T> {
     type Item = Vec<T>;
@@ -201,7 +228,7 @@ mod tests {
 
     #[test]
     fn test_polynomial() {
-        let pf32 = Polynomial::new(Ff32);
+        let pf32 = Polynomial::new(&Ff32);
 
         assert_eq!(pf32.eq(&vec![3.5, 0.0], &vec![3.5]), true);
         assert_eq!(pf32.add(&vec![2.25, 1.125], &vec![3.5]), vec![5.75, 1.125]);
@@ -224,7 +251,7 @@ mod tests {
     fn bench_neg(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let x = rng.gen::<[f64; 16]>().to_vec();
 
         b.iter(|| {
@@ -236,7 +263,7 @@ mod tests {
     fn bench_neg_assign(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let mut x = rng.gen::<[f64; 16]>().to_vec();
 
         b.iter(|| {
@@ -248,7 +275,7 @@ mod tests {
     fn bench_add(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let x = rng.gen::<[f64; 16]>().to_vec();
         let y = rng.gen::<[f64; 16]>().to_vec();
 
@@ -261,7 +288,7 @@ mod tests {
     fn bench_add_assign(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let mut x = rng.gen::<[f64; 16]>().to_vec();
         let y = rng.gen::<[f64; 16]>().to_vec();
 
@@ -274,7 +301,7 @@ mod tests {
     fn bench_mul(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let x = rng.gen::<[f64; 16]>().to_vec();
         let y = rng.gen::<[f64; 16]>().to_vec();
 
@@ -287,7 +314,7 @@ mod tests {
     fn bench_divrem(b: &mut Bencher) {
         let mut rng = rand::thread_rng();
 
-        let pf64 = Polynomial::new(Ff64);
+        let pf64 = Polynomial::new(&Ff64);
         let x = rng.gen::<[f64; 32]>().to_vec();
         let y = rng.gen::<[f64; 16]>().to_vec();
 

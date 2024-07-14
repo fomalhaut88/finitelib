@@ -1,3 +1,33 @@
+//! Basic multi precision operations.
+//!
+//! List of operations:
+//! * Addition
+//! * Subtraction
+//! * Multiplication
+//! * Euclidean division ([divide](crate::bigi::Bigi::divide))
+//! * Remainder
+//! * Overflowing addition ([add_overflowing](crate::bigi::Bigi::add_overflowing))
+//! * Overflowing subtraction ([sub_overflowing](crate::bigi::Bigi::sub_overflowing))
+//! * Overflowing multiplication ([mul_overflowing](crate::bigi::Bigi::mul_overflowing))
+//! * Overflowing euclidean division ([divide_overflowing](crate::bigi::Bigi::divide_overflowing))
+//! * Addition with `u64` ([add_unit](crate::bigi::Bigi::add_unit))
+//! * Subtraction with `u64` ([sub_unit](crate::bigi::Bigi::sub_unit))
+//! * Multiplication with `u64` ([mul_unit](crate::bigi::Bigi::mul_unit))
+//! * Division with `u64` ([divide_unit](crate::bigi::Bigi::divide_unit))
+//! * Remainder for `2^k` divisor ([rem_2k](crate::bigi::Bigi::rem_2k))
+//! * Random generating
+//! * Comparison (unsigned)
+//! * Bitwise AND
+//! * Bitwise OR
+//! * Bitwise NOT (`~` or assigned NOT as [bitwise_not_assign](crate::bigi::Bigi::bitwise_not_assign))
+//! * Bitwise XOR
+//! * Bitwise SHL
+//! * Bitwise SHR
+//! * Overflowing XOR multiplication ([xor_mul_overflowing](crate::bigi::Bigi::xor_mul_overflowing))
+//! * Overflowing XOR division ([xor_divide_overflowing](crate::bigi::Bigi::xor_divide_overflowing))
+//!
+//! Most of the operations support the assigned interface (`+=`, `-=`, etc).
+
 use std::{cmp, ops};
 
 use rand::prelude::*;
@@ -370,6 +400,32 @@ impl<const N: usize> Bigi<N> {
         carry
     }
 
+    fn _xor_offset(&mut self, rhs: &Self, offset: isize) {
+        // Split `offset`
+        let q: isize = offset.div_euclid(BIGI_UNIT_BITS as isize);
+        let r: usize = offset.rem_euclid(BIGI_UNIT_BITS as isize) as usize;
+
+        // Clamp iterator betweeb max(a1, a2) and min(b1, b2)
+        let clamp = |(a1, a2), (b1, b2)| {
+            std::cmp::max::<isize>(a1, a2)
+            ..
+            std::cmp::min::<isize>(b1, b2)
+        };
+
+        // Right part of `rhs` digit
+        for i in clamp((0, -q), (N as isize, N as isize - q)) {
+            self.0[(i + q) as usize] ^= rhs.0[i as usize] << r;
+        }
+
+        // Left part of `rhs` digit
+        if r > 0 {
+            for i in clamp((0, -q - 1), (N as isize, N as isize - q - 1)) {
+                self.0[(i + q + 1) as usize] ^= 
+                    rhs.0[i as usize] >> (BIGI_UNIT_BITS - r);
+            }
+        }
+    }
+
     /// Assigned addition (increment) with a plain `u64` integer.
     /// It returns `true` if overflowing happened.
     pub fn add_unit(&mut self, unit: u64) -> bool {
@@ -453,6 +509,65 @@ impl<const N: usize> Bigi<N> {
 
         for idx in (q + 1)..N {
             self.0[idx] = 0;
+        }
+    }
+
+    /// Performs XOR multiplication with overflowing. It keeps 
+    /// the distributive property regarding XOR as an addition operation: 
+    /// `(a * b) ^ (a * c) = a * (b ^ c)`
+    pub fn xor_mul_overflowing(&self, rhs: &Self) -> (Self, Self) {
+        let mut res = Self::min();
+        let mut ext = Self::min();
+        for (offset, bit) in self.bit_iter().enumerate() {
+            if bit {
+                res._xor_offset(rhs, offset as isize);
+                ext._xor_offset(
+                    rhs, offset as isize - (N * BIGI_UNIT_BITS) as isize
+                );
+            }
+        }
+        (res, ext)
+    }
+
+    /// Performs XOR division with overflowing as the inversion for 
+    /// the multiplication.
+    pub fn xor_divide_overflowing(&mut self, rhs: &Self, ext: &mut Self) -> 
+            Option<Self> {
+        let order_rhs = rhs.bit_len();
+        let order_ext = ext.bit_len();
+
+        let mut order_self = if order_ext == 0 {
+            self.bit_len()
+        } else {
+            N * BIGI_UNIT_BITS + order_ext
+        };
+
+        if order_rhs > 0 {
+            let mut res = Self::min();
+
+            while order_self >= order_rhs {
+                let bit = if order_self <= N * BIGI_UNIT_BITS {
+                    self.bit_get(order_self - 1)
+                } else {
+                    ext.bit_get(order_self - 1 - N * BIGI_UNIT_BITS)
+                };
+
+                if bit {
+                    let offset = order_self - order_rhs;
+
+                    self._xor_offset(rhs, offset as isize);
+                    ext._xor_offset(
+                        rhs, offset as isize - (N * BIGI_UNIT_BITS) as isize
+                    );
+
+                    res.bit_set(offset, true);
+                }
+                order_self -= 1;
+            }
+
+            Some(res)
+        } else {
+            None
         }
     }
 }
@@ -963,6 +1078,29 @@ mod tests {
 
         a.rem_2k(0);
         assert_eq!(a.to_decimal(), "0");
+    }
+
+    #[test]
+    fn test_xor_mul_divide() {
+        let a = Bigi::<4>::from_decimal(
+            "70011597082245702521290087447806528763417035600728176437530042129660745583227"
+        );
+        let b = Bigi::<4>::from_decimal(
+            "99893747326269902623342789505183727815353444030279517503290826441538462138393"
+        );
+
+        let (mut c, mut e) = a.xor_mul_overflowing(&b);
+
+        assert_eq!(c.to_decimal(), "65309662055680002716446342058602905594080210850251883629534663133943382621715");
+        assert_eq!(e.to_decimal(), "45516525973600415825015660741683020399346275692651436656915901048781668865316");
+
+        c ^= &Bigi::from(25);
+
+        let d = c.xor_divide_overflowing(&b, &mut e).unwrap();
+
+        assert_eq!(c, Bigi::from(25));
+        assert_eq!(e, Bigi::from(0));
+        assert_eq!(d, a);
     }
 
     #[bench]

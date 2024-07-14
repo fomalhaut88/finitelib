@@ -1,9 +1,71 @@
+//! A module that contains a trait for Euclidean rings.
+//!
+//! Euclidean rings are required in the cases where we naturally need
+//! [The Euclidean Extended Algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm).
+//! For example, to preform division in a finite field.
+//!
+//! Go to [EuclideanRing](crate::ring::EuclideanRing) to view the 
+//! implementation example.
+
 use std::mem;
 
 use crate::utils;
 use crate::group::Group;
 
 
+/// Euclidean ring trait.
+///
+/// Example for `i64`:
+///
+/// ```rust
+/// use finitelib::prelude::*;
+///
+/// struct RingForI64;
+///
+/// impl EuclideanRing for RingForI64 {
+///     type Item = i64;
+///
+///     fn zero(&self) -> Self::Item {
+///         0
+///     }
+///
+///     fn one(&self) -> Self::Item {
+///         1
+///     }
+///
+///     fn eq(&self, a: &Self::Item, b: &Self::Item) -> bool {
+///         a == b
+///     }
+///
+///     fn add(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
+///         a + b
+///     }
+///
+///     fn mul(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
+///         a * b
+///     }
+///
+///     fn neg(&self, a: &Self::Item) -> Self::Item {
+///         - a
+///     }
+///
+///     fn divrem(&self, a: &mut Self::Item, b: &Self::Item) -> 
+///             Option<Self::Item> {
+///         if *b == 0 {
+///             None
+///         } else {
+///             let q = a.div_euclid(*b);
+///             *a -= q * b;
+///             Some(q)
+///         }
+///     }
+/// }
+///
+/// let (gcd, a, b) = RingForI64.euclidean_extended(&45, &33);
+///
+/// assert_eq!((gcd, a, b), (3, 3, -4));
+/// assert_eq!(45 * a + 33 * b, gcd);
+/// ```
 pub trait EuclideanRing where 
         Self::Item: Clone + PartialEq {
     /// The type of the ring elements.

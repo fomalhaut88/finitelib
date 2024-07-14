@@ -1,22 +1,65 @@
-//! Galois field implementation of a prime characteristic and arbitraty degree.
+//! Galois field implementation of a prime characteristic and arbitraty degree
+//! ([Splitting field](https://en.wikipedia.org/wiki/Splitting_field) `GF(p^m)`).
+//!
+//! Example for a multi precision case:
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::bigi::prelude::*;
+//! use finitelib::gf::prime::Prime;
+//! use finitelib::gf::splitting::Splitting;
+//!
+//! // Basic multi precision data type (256-bit integer)
+//! type U256 = bigi_of_bits!(256);
+//!
+//! // Define the ring, characteristic and irreducible polynomial
+//! let R256 = bigi_ring_for_bigi!(U256);
+//! let characteristic = U256::from_decimal("67096435317933606252190858377894931905843553631817376158639971807689379094463");
+//! let irreducible = vec![U256::from(1), U256::from(0), U256::from(1)];  // 1 + x^2
+//!
+//! // Define prime field and splitting field
+//! let gfp = Prime::new(R256, characteristic);
+//! let gfs = Splitting::new(&gfp, irreducible);
+//!
+//! // Perform division
+//! let x = gfs.div(
+//!     &vec![U256::from(1), U256::from(2)],
+//!     &vec![U256::from(3), U256::from(4)],
+//! ).unwrap();
+//!
+//! assert_eq!(x, vec![U256::from_decimal("8051572238152032750262903005347391828701226435818085139036796616922725491336"), 
+//!                    U256::from_decimal("56361005667064229251840321037431742800908585050726595973257576318459078439349")]);
+//!
+//! // Check the result
+//! let y = gfs.mul(&x, &vec![U256::from(3), U256::from(4)]);
+//!
+//! assert_eq!(y, vec![U256::from(1), U256::from(2)]);
+//! ```
 
 use crate::ring::EuclideanRing;
 use crate::field::Field;
 use crate::polynomial::Polynomial;
 
 
+/// Splitting field structure that contains polynomial object 
+/// (for the necessary arithmetic), irreducible polynomial (as vector) and
+/// the degree.
+///
+/// See [crate::gf::splitting] for the full example.
 #[derive(Debug, Clone)]
-pub struct Splitting<T, F> {
-    pub poly: Polynomial<F>,
+pub struct Splitting<'a, T, F> {
+    pub poly: Polynomial<'a, F>,
     pub irreducible: Vec<T>,
     pub degree: usize,
 }
 
 
-impl<T, F> Splitting<T, F> where
+impl<'a, T, F> Splitting<'a, T, F> where
         T: Clone + PartialEq,
         F: Field<Item = T> {
-    pub fn new(field: F, irreducible: Vec<T>) -> Self {
+    /// Create splitting field from the base field link and 
+    /// irreducible polynomial. The degree is calculated and the degree of
+    /// the irreducible polynomial.
+    pub fn new(field: &'a F, irreducible: Vec<T>) -> Self {
         let poly = Polynomial::new(field);
         let degree = poly.degree(&irreducible).unwrap();
         Self { poly, irreducible, degree }
@@ -24,7 +67,7 @@ impl<T, F> Splitting<T, F> where
 }
 
 
-impl<T, F> Field for Splitting<T, F> where 
+impl<'a, T, F> Field for Splitting<'a, T, F> where 
         T: Clone + PartialEq,
         F: Field<Item = T> {
     type Item = Vec<T>;
@@ -106,10 +149,8 @@ mod tests {
         let characteristic = 5;
         let irreducible = vec![2, 0, 1];
 
-        let gfe = Splitting::new(
-            Prime::new(Ri64, characteristic),
-            irreducible
-        );
+        let fld = Prime::new(Ri64, characteristic);
+        let gfe = Splitting::new(&fld, irreducible);
 
         assert_eq!(gfe.zero(), vec![0, 0]);
         assert_eq!(gfe.one(), vec![1, 0]);
@@ -149,10 +190,8 @@ mod tests {
         let characteristic = 1682592883;
         let irreducible = vec![1, 0, 1];
 
-        let gfe = Splitting::new(
-            Prime::new(Ri64, characteristic),
-            irreducible
-        );
+        let fld = Prime::new(Ri64, characteristic);
+        let gfe = Splitting::new(&fld, irreducible);
 
         let mut rng = rand::thread_rng();
 
@@ -176,10 +215,8 @@ mod tests {
         let characteristic = 1682592883;
         let irreducible = vec![1, 0, 1];
 
-        let gfe = Splitting::new(
-            Prime::new(Ri64, characteristic),
-            irreducible
-        );
+        let fld = Prime::new(Ri64, characteristic);
+        let gfe = Splitting::new(&fld, irreducible);
 
         let mut rng = rand::thread_rng();
 
@@ -203,10 +240,8 @@ mod tests {
         let characteristic = 1682592883;
         let irreducible = vec![1, 0, 1];
 
-        let gfe = Splitting::new(
-            Prime::new(Ri64, characteristic),
-            irreducible
-        );
+        let fld = Prime::new(Ri64, characteristic);
+        let gfe = Splitting::new(&fld, irreducible);
 
         let mut rng = rand::thread_rng();
 
@@ -224,10 +259,8 @@ mod tests {
         let characteristic = 1682592883;
         let irreducible = vec![1, 0, 1];
 
-        let gfe = Splitting::new(
-            Prime::new(Ri64, characteristic),
-            irreducible
-        );
+        let fld = Prime::new(Ri64, characteristic);
+        let gfe = Splitting::new(&fld, irreducible);
 
         let mut rng = rand::thread_rng();
 

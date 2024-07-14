@@ -1,4 +1,6 @@
 //! A module that contains a trait for mathematical field objects.
+//!
+//! Go to [Field](crate::field::Field) to view the implementation example.
 
 use crate::utils;
 use crate::group::Group;
@@ -187,7 +189,19 @@ pub trait Field where
 }
 
 
-/// Addition group over a field
+/// Addition group over a field.
+///
+/// Example:
+///
+/// ```rust
+/// use finitelib::prelude::*;
+/// use finitelib::common::fields::Ff64;
+///
+/// let g_add = Ff64.as_add_group();
+///
+/// assert_eq!(g_add.zero(), 0.0);
+/// assert_eq!(g_add.add(&3.0, &5.0), 8.0);
+/// ```
 pub struct AddGroup<'a, F: ?Sized> {
     field: &'a F,
 }
@@ -240,7 +254,19 @@ impl<'a, F: Field> Group for AddGroup<'a, F> {
 }
 
 
-/// Multiplication group over a field
+/// Multiplication group over a field.
+///
+/// Example:
+///
+/// ```rust
+/// use finitelib::prelude::*;
+/// use finitelib::common::fields::Ff64;
+///
+/// let g_mul = Ff64.as_mul_group();
+///
+/// assert_eq!(g_mul.zero(), 1.0);
+/// assert_eq!(g_mul.add(&3.0, &5.0), 15.0);
+/// ```
 pub struct MulGroup<'a, F: ?Sized> {
     field: &'a F,
 }

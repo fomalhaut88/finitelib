@@ -1,4 +1,43 @@
-//! Montgomery field that has isomorphism to a prime field.
+//! Montgomery representation of the prime field `GF(p)` 
+//! (<https://en.wikipedia.org/wiki/Montgomery_modular_multiplication>).
+//!
+//! Example for a multi precision case:
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::bigi::prelude::*;
+//! use finitelib::gf::montgomery::Montgomery;
+//!
+//! // Basic multi precision data type (512-bit integer)
+//! type U512 = bigi_of_bits!(512);
+//!
+//! // Define the ring
+//! let R256 = bigi_ring_for_bigi!(U512);
+//!
+//! // Define the characteristic as a 256-bit prime
+//! let characteristic = U512::from_decimal("67096435317933606252190858377894931905843553631817376158639971807689379094463");
+//!
+//! // Define GF(p) in the Montgomery representation
+//! let gfm = Montgomery::new(R256, characteristic, 256);
+//!
+//! // Define two numbers
+//! let a = U512::from(3);
+//! let b = U512::from(2);
+//!
+//! // Convert into their Montgomery images
+//! let am = gfm.convert_into(&a);
+//! let bm = gfm.convert_into(&b);
+//!
+//! // Perform division
+//! let cm = gfm.div(&am, &bm).unwrap();
+//!
+//! // Convert the result from its Montgomery image
+//! let c = gfm.convert_from(&cm);
+//!
+//! assert_eq!(c, U512::from_decimal("33548217658966803126095429188947465952921776815908688079319985903844689547233"));
+//!
+//! // Check the result
+//! assert_eq!(gfm.mul(&cm, &bm), am);
+//! ```
 
 use std::ops;
 
@@ -6,6 +45,9 @@ use crate::field::Field;
 use crate::ring::EuclideanRing;
 
 
+/// Galois prime field `GF(p)` in the Montgomery representation.
+///
+/// See [crate::gf::montgomery] for the full example.
 #[derive(Debug, Clone)]
 pub struct Montgomery<T, R> {
     ring: R,
@@ -24,15 +66,17 @@ impl<T, R> Montgomery<T, R> where
                        ops::Shl<usize, Output = T> +
                        ops::Shr<usize, Output = T>,
         R: EuclideanRing<Item = T> {
+    /// Create Galois prime field `GF(p)` from the ring, prime characteristic
+    /// and the power of 2 such that `characteristic < 2^power`.
     pub fn new(ring: R, characteristic: T, power: usize) -> Self {
         let mut r = &ring.one() << power;
         let mut ni = ring.euclidean_extended(&r, &characteristic).2;
 
         ring.neg_assign(&mut ni);
 
-        if ni < ring.zero() {
-            ring.add_assign(&mut ni, &r);
-        }
+        // if ni < ring.zero() {
+        //     ring.add_assign(&mut ni, &r);
+        // }
 
         let mask = ring.sub(&r, &ring.one());
         ring.divrem(&mut r, &characteristic);
@@ -47,13 +91,15 @@ impl<T, R> Montgomery<T, R> where
         Self { ring, characteristic, power, ni, one, mask, one3 }
     }
 
-    pub fn from(&self, a: &T) -> T {
+    /// Convert the number into montgomery representation.
+    pub fn convert_into(&self, a: &T) -> T {
         let mut r = a << self.power;
         self.ring.divrem(&mut r, &self.characteristic);
         r
     }
 
-    pub fn into(&self, a: &T) -> T {
+    /// Convert the number from montgomery representation.
+    pub fn convert_from(&self, a: &T) -> T {
         self.mul(a, &self.ring.one())
     }
 }
@@ -145,7 +191,7 @@ mod tests {
     #[test]
     fn test() {
         let characteristic = 17;
-        let power = utils::bit_order(&characteristic).unwrap() + 1;
+        let power = utils::uint_bit_order(&characteristic);
 
         let mgr = Montgomery::new(Ri32, characteristic, power);
 
@@ -165,7 +211,7 @@ mod tests {
     #[bench]
     fn bench_i16_add(b: &mut Bencher) {
         let characteristic: i64 = 65129;  // 1682592883
-        let power = utils::bit_order(&characteristic).unwrap() + 1;
+        let power = utils::uint_bit_order(&characteristic);
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
@@ -182,7 +228,7 @@ mod tests {
     #[bench]
     fn bench_i16_mul(b: &mut Bencher) {
         let characteristic: i64 = 65129;
-        let power = utils::bit_order(&characteristic).unwrap() + 1;
+        let power = utils::uint_bit_order(&characteristic);
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
@@ -199,7 +245,7 @@ mod tests {
     #[bench]
     fn bench_i16_inv(b: &mut Bencher) {
         let characteristic: i64 = 65129;
-        let power = utils::bit_order(&characteristic).unwrap() + 1;
+        let power = utils::uint_bit_order(&characteristic);
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
@@ -215,7 +261,7 @@ mod tests {
     #[bench]
     fn bench_i16_pow_scalar(b: &mut Bencher) {
         let characteristic: i64 = 65129;
-        let power = utils::bit_order(&characteristic).unwrap() + 1;
+        let power = utils::uint_bit_order(&characteristic);
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 

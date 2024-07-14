@@ -1,9 +1,40 @@
-//! Galois field implementation of a prime characteristic and degree `1`.
+//! Galois field implementation of a prime characteristic and degree `1` 
+//! ([Prime field](https://en.wikipedia.org/wiki/Characteristic_(algebra)#prime_field) `GF(p)`).
+//!
+//! Example for a multi precision case:
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::bigi::prelude::*;
+//! use finitelib::gf::prime::Prime;
+//!
+//! // Basic multi precision data type (256-bit integer)
+//! type U256 = bigi_of_bits!(256);
+//!
+//! // Define the ring and characteristic
+//! let R256 = bigi_ring_for_bigi!(U256);
+//! let characteristic = U256::from_decimal("67096435317933606252190858377894931905843553631817376158639971807689379094463");
+//!
+//! // Define the prime field
+//! let gf = Prime::new(R256, characteristic);
+//!
+//! // Perform division
+//! let x = gf.div(&U256::from(3), &U256::from(2)).unwrap();
+//!
+//! assert_eq!(x, U256::from_decimal("33548217658966803126095429188947465952921776815908688079319985903844689547233"));
+//!
+//! // Check the result
+//! let y = gf.mul(&x, &U256::from(2));
+//!
+//! assert_eq!(y, U256::from(3));
+//! ```
 
 use crate::field::Field;
 use crate::ring::EuclideanRing;
 
 
+/// Prime field structure that contains the ring and characteristic.
+///
+/// See [crate::gf::prime] for the full example.
 #[derive(Debug, Clone)]
 pub struct Prime<T, R> {
     ring: R,
@@ -12,6 +43,7 @@ pub struct Prime<T, R> {
 
 
 impl<T, R> Prime<T, R> {
+    /// Create a prime field object from the ring and characteristic.
     pub fn new(ring: R, characteristic: T) -> Self {
         Self { ring, characteristic }
     }

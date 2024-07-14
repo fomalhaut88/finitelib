@@ -1,3 +1,28 @@
+//! A module for multi precision arithmetic.
+//!
+//! The basic type for long unsigned integers (signed ones are not supported) 
+//! is called `Bigi` that is a fixed size array of `u64`. Since it has
+//! static data allocation, it gives better performance. The `Bigi` data type
+//! can be accessed by `Bigi<N>` where `N` is a count of `u64` blocks
+//! (for example `Bigi<4>` is a 256-bit unsigned integer data type) or by
+//! the macro [bigi_of_bits](crate::bigi_of_bits) (for example
+//! `bigi_of_bits!(256)` provides a 256-bit unsigned integer data type).
+//!
+//! Usage example:
+//!
+//! ```rust
+//! use finitelib::bigi::prelude::*;
+//!
+//! type U2048 = bigi_of_bits!(2048);
+//!
+//! let a: U2048 = Bigi::from_decimal("129386561239752441239487256129561928457");
+//! let b: U2048 = Bigi::from_decimal("912845701238565701928374012938470192834");
+//!
+//! let c = &a * &b;
+//!
+//! assert_eq!(c.to_decimal(), "118109966225748442091981144491374190381453162074572911916277590970985702077138");
+//! ```
+
 use std::{mem, iter};
 
 use crate::utils;
@@ -11,11 +36,14 @@ pub mod prime;
 pub mod prelude;
 
 
+/// Number of bytes in `u64` block (it is 8)
 pub const BIGI_UNIT_BYTES: usize = mem::size_of::<u64>();
+
+/// Number of bits in `u64` block (it is 64)
 pub const BIGI_UNIT_BITS: usize = BIGI_UNIT_BYTES << 3;
 
 
-/// Bigi structure that is a fixed size array.
+/// Bigi basic structure that is a fixed size array of `u64`.
 #[derive(Debug, Clone, PartialEq)]
 pub struct Bigi<const N: usize>([u64; N]);
 
@@ -28,6 +56,7 @@ pub struct Bigi<const N: usize>([u64; N]);
 /// use finitelib::bigi::prelude::*;
 ///
 /// type U2048 = bigi_of_bits!(2048);
+///
 /// assert_eq!(U2048::size(), 32);
 /// assert_eq!(std::mem::size_of::<U2048>(), 256);
 /// ```
@@ -108,7 +137,7 @@ impl<const N: usize> Bigi<N> {
         let order = self._get_order();
         if order > 0 {
             (order - 1) * BIGI_UNIT_BITS + 
-                utils::uint_bit_len(self.0[order - 1])
+                utils::uint_bit_order(&self.0[order - 1])
         } else {
             0
         }
@@ -119,7 +148,7 @@ impl<const N: usize> Bigi<N> {
         let mut countdown = self.bit_len();
 
         let mut idx = 0;
-        let mut digit_iter = utils::uint_bit_iter(self.0[idx]);
+        let mut digit_iter = utils::int_to_bits_iter(self.0[idx]);
 
         iter::from_fn(move || {
             if countdown == 0 {
@@ -130,7 +159,7 @@ impl<const N: usize> Bigi<N> {
 
                     if res.is_none() {
                         idx += 1;
-                        digit_iter = utils::uint_bit_iter(self.0[idx]);
+                        digit_iter = utils::int_to_bits_iter(self.0[idx]);
                         res = digit_iter.next();
                     }
 

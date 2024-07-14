@@ -1,3 +1,5 @@
+//! Algoritms for long prime numbers.
+
 use std::mem;
 
 use rand::Rng;

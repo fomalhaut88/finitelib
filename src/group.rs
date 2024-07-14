@@ -1,11 +1,13 @@
 //! A module that contains a trait for mathematical group objects.
+//!
+//! Go to [Group](crate::group::Group) to view the implementation example.
 
 use crate::utils;
 
 
 /// A trait for a group over the type `Item`.
 ///
-/// Use example:
+/// Use example (for modular arithmetic):
 ///
 /// ```
 /// use finitelib::group::Group;

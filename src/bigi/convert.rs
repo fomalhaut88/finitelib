@@ -1,3 +1,20 @@
+//! Converting between multi precision type `Bigi` and standard data types.
+//!
+//! ```rust
+//! use finitelib::bigi::prelude::*;
+//!
+//! type U1024 = bigi_of_bits!(1024);
+//! type U2048 = bigi_of_bits!(2048);
+//!
+//! let x: u32 = 25;
+//!
+//! let x1024 = U1024::from(x);
+//! let x2048 = U2048::from(&x1024);
+//! let x32 = u32::from(&x2048);
+//!
+//! assert_eq!(x, x32);
+//! ```
+
 use crate::bigi::{Bigi, BIGI_UNIT_BITS};
 
 
@@ -54,6 +71,12 @@ macro_rules! define_convert_from_integer {
                 Self::from(x as u64)
             }
         }
+
+        impl<const N: usize> From<&Bigi<N>> for $type {
+            fn from(a: &Bigi<N>) -> $type {
+                a.0[0] as $type
+            }
+        }
     };
 }
 
@@ -66,7 +89,6 @@ define_convert_from_integer!(u8);
 define_convert_from_integer!(u16);
 define_convert_from_integer!(u32);
 define_convert_from_integer!(usize);
-define_convert_from_integer!(bool);
 
 
 #[cfg(test)]

@@ -1,9 +1,41 @@
 //! Galios binary field `GF(2^m)`.
+//!
+//! Example for a multi precision case (the irreducible value taken from 
+//! <https://poincare.matf.bg.ac.rs/~ezivkovm/publications/primpol1.pdf> for n=255 and k=3):
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::bigi::prelude::*;
+//! use finitelib::gf::binary::Binary;
+//!
+//! // Basic multi precision data type (256-bit integer)
+//! type U256 = bigi_of_bits!(256);
+//!
+//! // Define the ring and irreducible value
+//! let RX256 = bigi_xor_ring_for_bigi!(U256);
+//! let irreducible = U256::from_decimal("57896044618658097711785492504343953926634992332820282019728796507556192190465");  // 1 + x^52 + x^255
+//!
+//! // Define the prime field
+//! let gf = Binary::new(RX256, irreducible);
+//!
+//! // Perform division
+//! let x = gf.div(&U256::from(5), &U256::from(12)).unwrap();
+//! 
+//! assert_eq!(x, U256::from_decimal("43422033463993573283839119378257965444976244249615211514796597380667144142848"));
+//!
+//! // Check the result
+//! let y = gf.mul(&x, &U256::from(12));
+//!
+//! assert_eq!(y, U256::from(5));
+//! ```
 
 use crate::field::Field;
 use crate::ring::EuclideanRing;
 
 
+/// Binary field structure for the field `GF(2^m)` that contains the XOR ring 
+/// and irreducible value.
+///
+/// See [crate::gf::binary] for the full example.
 #[derive(Debug, Clone)]
 pub struct Binary<R: EuclideanRing> {
     ring: R,
@@ -12,6 +44,8 @@ pub struct Binary<R: EuclideanRing> {
 
 
 impl<R: EuclideanRing> Binary<R> {
+    /// Create a binary field object from the given XOR ring and 
+    /// the irreducible value.
     pub fn new(ring: R, irreducible: R::Item) -> Self {
         Self { ring, irreducible }
     }
@@ -42,9 +76,7 @@ impl<R: EuclideanRing> Field for Binary<R> {
     }
 
     fn mul(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
-        let mut r = self.ring.mul(a, b);
-        self.ring.divrem(&mut r, &self.irreducible);
-        r
+        self.ring.mulrem(a, b, &self.irreducible)
     }
 
     fn neg(&self, a: &Self::Item) -> Self::Item {

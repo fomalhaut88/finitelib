@@ -58,6 +58,10 @@ macro_rules! define_add_float_group {
             fn neg(&self, a: &Self::Item) -> Self::Item {
                 - a
             }
+
+            fn sub(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
+                a - b
+            }
         }
     };
 }
@@ -85,6 +89,10 @@ macro_rules! define_mul_float_group {
 
             fn neg(&self, a: &Self::Item) -> Self::Item {
                 1.0 / a
+            }
+
+            fn sub(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
+                a / b
             }
         }
     };

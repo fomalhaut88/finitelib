@@ -135,14 +135,17 @@ macro_rules! define_xor_euclidean_ring {
 
             fn divrem(&self, a: &mut Self::Item, b: &Self::Item) -> 
                     Option<Self::Item> {
-                if let Some(order_b) = utils::bit_order(b) {
-                    if let Some(order_a) = utils::bit_order(a) {
+                let order_a = utils::uint_bit_order(a);
+                let order_b = utils::uint_bit_order(b);
+
+                if order_b > 0 {
+                    if order_a > 0 {
                         if order_a >= order_b {
                             let order_r = order_a - order_b;
 
                             let mut r = 0;
                             let mut b = b << order_r;
-                            let mut ea = 1 << order_a;
+                            let mut ea = 1 << (order_a - 1);
                             let mut er = 1 << order_r;
 
                             for _ in 0..=order_r {
