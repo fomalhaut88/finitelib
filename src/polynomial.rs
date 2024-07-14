@@ -78,7 +78,7 @@ impl<'a, T, F> Polynomial<'a, F> where
         a.resize(size, self.0.zero());
     }
 
-    /// Assigns all the elements in the polunomial with the given constant.
+    /// Multiply each element in the polunomial by the given constant.
     pub fn mul_assign_const(&self, a: &mut Vec<T>, c: &T) {
         for e in a.iter_mut() {
             self.0.mul_assign(e, c);
