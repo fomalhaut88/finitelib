@@ -4,7 +4,6 @@
 //! <https://poincare.matf.bg.ac.rs/~ezivkovm/publications/primpol1.pdf> for n=255 and k=3):
 //! ```rust
 //! use finitelib::prelude::*;
-//! use finitelib::bigi::prelude::*;
 //! use finitelib::gf::binary::Binary;
 //!
 //! // Basic multi precision data type (256-bit integer)

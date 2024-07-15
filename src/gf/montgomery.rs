@@ -4,7 +4,6 @@
 //! Example for a multi precision case:
 //! ```rust
 //! use finitelib::prelude::*;
-//! use finitelib::bigi::prelude::*;
 //! use finitelib::gf::montgomery::Montgomery;
 //!
 //! // Basic multi precision data type (512-bit integer)

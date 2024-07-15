@@ -10,7 +10,59 @@
 //!     * Converting
 //!     * Formatting
 //!     * Basic operations: addition, subtraction, product, division, bitwise operations
-//!     * Prime numbers: Fetmat test, Miller-Rabin test, Legendre symbol, Tonelli–Shanks algorithm
+//!     * Prime numbers: Fermat test, Miller-Rabin test, Legendre symbol, Tonelli–Shanks algorithm
+//!
+//! ## Usage
+//!
+//! Installation command:
+//!
+//! ```ignore
+//! cargo add finitelib
+//! ```
+//!
+//! Or add this to your `Cargo.toml`:
+//!
+//! ```toml
+//! [dependencies]
+//! finitelib = "0.1.4"
+//! ```
+//!
+//! ## Basic example
+//!
+//! ```rust
+//! use finitelib::prelude::*;
+//! use finitelib::gf::prime::Prime as GF;
+//!
+//! // Define 256-bit unsigned integer type
+//! type U256 = bigi_of_bits!(256);
+//!
+//! // Define an Euclidean ring over U256, that contains the correct basic
+//! // math operations like addition, multiplication, Euclidean extended
+//! // algorithm and so on.
+//! let R256 = bigi_ring_for_bigi!(U256);
+//!
+//! // Define a 256-bit prime number
+//! let p = U256::from_decimal("67096435317933606252190858377894931905843553631817376158639971807689379094463");
+//!
+//! // Define a finite field `GF(p)` with the prime characteristic `p`
+//! let gf = GF::new(R256, p);
+//!
+//! // Define two arbitrary numbers
+//! let a = U256::from(3);
+//! let b = U256::from(2);
+//!
+//! // Perform division a / b inside the field
+//! let c = gf.div(&a, &b).unwrap();
+//!
+//! // Print the result as a decimal string
+//! println!("{:?}", c.to_decimal());
+//!
+//! // Perform multiplication
+//! let d = gf.mul(&c, &b);
+//!
+//! // Since multiplication is opposite to division `d` must be equal to `a`
+//! assert_eq!(d, a);
+//! ```
 
 #![feature(test)]
 #![feature(bigint_helper_methods)]

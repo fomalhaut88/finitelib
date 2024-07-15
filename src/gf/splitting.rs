@@ -4,7 +4,6 @@
 //! Example for a multi precision case:
 //! ```rust
 //! use finitelib::prelude::*;
-//! use finitelib::bigi::prelude::*;
 //! use finitelib::gf::prime::Prime;
 //! use finitelib::gf::splitting::Splitting;
 //!
