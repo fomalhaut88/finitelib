@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! finitelib = "0.1.5"
+//! finitelib = "0.1.6"
 //! ```
 //!
 //! ## Basic example
@@ -64,9 +64,9 @@
 //! assert_eq!(d, a);
 //! ```
 
+#![warn(missing_docs)]
 #![feature(test)]
 #![feature(bigint_helper_methods)]
-#![feature(iter_repeat_n)]
 
 extern crate test;
 

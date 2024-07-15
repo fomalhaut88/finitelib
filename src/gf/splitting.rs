@@ -46,9 +46,9 @@ use crate::polynomial::Polynomial;
 /// See [crate::gf::splitting] for the full example.
 #[derive(Debug, Clone)]
 pub struct Splitting<'a, T, F> {
-    pub poly: Polynomial<'a, F>,
-    pub irreducible: Vec<T>,
-    pub degree: usize,
+    poly: Polynomial<'a, F>,
+    irreducible: Vec<T>,
+    degree: usize,
 }
 
 
