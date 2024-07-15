@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! finitelib = "0.1.4"
+//! finitelib = "0.1.5"
 //! ```
 //!
 //! ## Basic example
