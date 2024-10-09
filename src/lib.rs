@@ -16,7 +16,7 @@
 //!
 //! Installation command:
 //!
-//! ```ignore
+//! ```sh
 //! cargo add finitelib
 //! ```
 //!
