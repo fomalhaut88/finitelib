@@ -26,7 +26,7 @@ Or add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-finitelib = "0.1.6"
+finitelib = "0.1.7"
 ```
 
 ## Basic example
