@@ -170,8 +170,8 @@ pub trait EuclideanRing where
     }
 
     /// Represent the field as a group by addition.
-    fn as_add_group(&self) -> AddGroup<Self> {
-        AddGroup {
+    fn as_add_group(&self) -> RingAddGroup<Self> {
+        RingAddGroup {
             ring: self
         }
     }
@@ -291,12 +291,12 @@ pub trait EuclideanRing where
 
 
 /// Addition group over an euclidean ring
-pub struct AddGroup<'a, R: ?Sized> {
+pub struct RingAddGroup<'a, R: ?Sized> {
     ring: &'a R,
 }
 
 
-impl<'a, R: EuclideanRing> Group for AddGroup<'a, R> {
+impl<'a, R: EuclideanRing> Group for RingAddGroup<'a, R> {
     type Item = R::Item;
 
     fn zero(&self) -> Self::Item {

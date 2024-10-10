@@ -84,6 +84,16 @@ impl<'a, T, F> Polynomial<'a, F> where
             self.0.mul_assign(e, c);
         }
     }
+
+    /// Evaluates the polynomial `a` for given `x`.
+    pub fn eval(&self, a: &Vec<T>, x: &T) -> T {
+        let mut y = self.0.zero();
+        for e in a.iter().rev() {
+            self.0.mul_assign(&mut y, x);
+            self.0.add_assign(&mut y, e);
+        }
+        y
+    }
 }
 
 
@@ -245,6 +255,28 @@ mod tests {
             pf32.rem(&vec![0.25, -0.5, 0.25, 3.0], &vec![1.5, 2.0]),
             Some(vec![-0.5, 0.0, 0.0, 0.0])
         );
+    }
+
+    #[test]
+    fn test_eval() {
+        let pf32 = Polynomial::new(&Ff32);
+
+        assert_eq!(pf32.eval(&vec![6.0, -5.0, 1.0], &4.0), 2.0);
+        assert_eq!(pf32.eval(&vec![6.0, -5.0, 1.0], &2.0), 0.0);
+        assert_eq!(pf32.eval(&vec![6.0, -5.0, 1.0], &0.0), 6.0);
+        assert_eq!(pf32.eval(&vec![], &2.0), 0.0);
+    }
+
+    #[bench]
+    fn bench_eval(b: &mut Bencher) {
+        let mut rng = rand::thread_rng();
+
+        let pf64 = Polynomial::new(&Ff64);
+        let x = rng.gen::<[f64; 16]>().to_vec();
+
+        b.iter(|| {
+            let _y = pf64.eval(&x, &3.0);
+        });
     }
 
     #[bench]

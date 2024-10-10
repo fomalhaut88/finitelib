@@ -174,15 +174,15 @@ pub trait Field where
     }
 
     /// Represent the field as a group by addition.
-    fn as_add_group(&self) -> AddGroup<Self> {
-        AddGroup {
+    fn as_add_group(&self) -> FieldAddGroup<Self> {
+        FieldAddGroup {
             field: self
         }
     }
 
     /// Represent the field as a group by multiplication.
-    fn as_mul_group(&self) -> MulGroup<Self> {
-        MulGroup {
+    fn as_mul_group(&self) -> FieldMulGroup<Self> {
+        FieldMulGroup {
             field: self
         }
     }
@@ -202,12 +202,12 @@ pub trait Field where
 /// assert_eq!(g_add.zero(), 0.0);
 /// assert_eq!(g_add.add(&3.0, &5.0), 8.0);
 /// ```
-pub struct AddGroup<'a, F: ?Sized> {
+pub struct FieldAddGroup<'a, F: ?Sized> {
     field: &'a F,
 }
 
 
-impl<'a, F: Field> Group for AddGroup<'a, F> {
+impl<'a, F: Field> Group for FieldAddGroup<'a, F> {
     type Item = F::Item;
 
     fn zero(&self) -> Self::Item {
@@ -267,12 +267,12 @@ impl<'a, F: Field> Group for AddGroup<'a, F> {
 /// assert_eq!(g_mul.zero(), 1.0);
 /// assert_eq!(g_mul.add(&3.0, &5.0), 15.0);
 /// ```
-pub struct MulGroup<'a, F: ?Sized> {
+pub struct FieldMulGroup<'a, F: ?Sized> {
     field: &'a F,
 }
 
 
-impl<'a, F: Field> Group for MulGroup<'a, F> {
+impl<'a, F: Field> Group for FieldMulGroup<'a, F> {
     type Item = F::Item;
 
     fn zero(&self) -> Self::Item {
