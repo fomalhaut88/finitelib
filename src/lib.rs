@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! finitelib = "0.1.6"
+//! finitelib = "0.1.8"
 //! ```
 //!
 //! ## Basic example
@@ -71,6 +71,7 @@
 extern crate test;
 
 pub mod utils;
+pub mod signed;
 pub mod group;
 pub mod field;
 pub mod ring;

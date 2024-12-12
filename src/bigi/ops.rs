@@ -583,7 +583,7 @@ impl<const N: usize> Distribution<Bigi<N>> for Standard {
 
 
 impl<const N: usize> PartialOrd for Bigi<N> {
-    fn partial_cmp(&self, rhs: &Bigi<N>) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, rhs: &Bigi<N>) -> Option<cmp::Ordering> {
         for idx in (0..N).rev() {
             if self.0[idx] < rhs.0[idx] {
                 return Some(cmp::Ordering::Less);

@@ -191,6 +191,7 @@ impl<const N: usize> Bigi<N> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::signed::Signed;
 
     #[test]
     fn test_as_array() {
@@ -272,5 +273,30 @@ mod tests {
         type U2048 = bigi_of_bits!(2048);
         assert_eq!(mem::size_of::<U2048>(), 256);
         assert_eq!(U2048::size(), 32);
+    }
+
+    #[test]
+    fn test_bigi_signed() {
+        type U512 = bigi_of_bits!(512);
+        type I512 = Signed<U512>;
+
+        // a > 0
+        let a: I512 = Bigi::<8>::from_decimal(
+            "70011597082245702521290087447806528763417035600728176437530042129660745583227"
+        ).into();
+
+        // b < 0
+        let b: I512 = Bigi::<8>::from_decimal(
+            "31748292332736638260997326595003206151062806364501393100925672066615273796617"
+        ).into();
+        let b = -b;
+
+        let c = &a * &b;
+        
+        assert_eq!(
+            c.get().to_decimal(), 
+            "2222748650848908031820938128993338719537265726594322509944619487708154171020933436409596870357396856024737376838906180914669746523938439158164990244543059"
+        );
+        assert!(c.is_negative());
     }
 }
