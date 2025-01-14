@@ -34,6 +34,7 @@ pub mod ops;
 pub mod rings;
 pub mod prime;
 pub mod prelude;
+pub mod frac;
 
 
 /// Number of bytes in `u64` block (it is 8)
