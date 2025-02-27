@@ -199,10 +199,10 @@ mod tests {
     fn bench_i16_gen(b: &mut Bencher) {
         let characteristic: i64 = 65129;  // 1682592883
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let _x = rng.gen::<i64>().abs() % characteristic;
+            let _x = rng.random::<i64>().abs() % characteristic;
         });
     }
 
@@ -211,11 +211,11 @@ mod tests {
         let characteristic: i64 = 65129;
         let gfp = Prime::new(Ri64, characteristic);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
-            let y = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
+            let y = rng.random::<i64>().abs() % characteristic;
 
             let _z = gfp.add(&x, &y);
         });
@@ -226,11 +226,11 @@ mod tests {
         let characteristic: i64 = 65129;
         let gfp = Prime::new(Ri64, characteristic);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
-            let y = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
+            let y = rng.random::<i64>().abs() % characteristic;
 
             let _z = gfp.mul(&x, &y);
         });
@@ -241,10 +241,10 @@ mod tests {
         let characteristic: i64 = 65129;
         let gfp = Prime::new(Ri64, characteristic);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
 
             let _z = gfp.inv(&x);
         });
@@ -255,9 +255,9 @@ mod tests {
         let characteristic: i64 = 65129;
         let gfp = Prime::new(Ri64, characteristic);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<i64>().abs() % characteristic;
+        let x = rng.random::<i64>().abs() % characteristic;
 
         b.iter(|| {
             let y = gfp.pow_scalar(

@@ -238,10 +238,10 @@ mod tests {
 
     #[bench]
     fn bench_i64_euclidean_extended(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<i64>().abs();
-        let y = rng.gen::<i64>().abs();
+        let x = rng.random::<i64>().abs();
+        let y = rng.random::<i64>().abs();
 
         b.iter(|| {
             Ri64.euclidean_extended(&x, &y);
@@ -250,10 +250,10 @@ mod tests {
 
     #[bench]
     fn bench_rxu64_mul(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<u64>() >> 32;
-        let y = rng.gen::<u64>() >> 32;
+        let x = rng.random::<u64>() >> 32;
+        let y = rng.random::<u64>() >> 32;
 
         b.iter(|| {
             RXu64.mul(&x, &y);
@@ -262,10 +262,10 @@ mod tests {
 
     #[bench]
     fn bench_rxu64_euclidean_extended(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<u64>();
-        let y = rng.gen::<u64>();
+        let x = rng.random::<u64>();
+        let y = rng.random::<u64>();
 
         b.iter(|| {
             RXu64.euclidean_extended(&x, &y);

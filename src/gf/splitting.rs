@@ -174,12 +174,12 @@ mod tests {
     fn bench_i32_gen(b: &mut Bencher) {
         let characteristic: i64 = 1682592883;
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
             let _x = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
         });
     }
@@ -192,17 +192,17 @@ mod tests {
         let fld = Prime::new(Ri64, characteristic);
         let gfe = Splitting::new(&fld, irreducible);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
             let x = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
 
             let y = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
 
             let _z = gfe.add(&x, &y);
@@ -217,17 +217,17 @@ mod tests {
         let fld = Prime::new(Ri64, characteristic);
         let gfe = Splitting::new(&fld, irreducible);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
             let x = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
 
             let y = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
 
             let _z = gfe.mul(&x, &y);
@@ -242,12 +242,12 @@ mod tests {
         let fld = Prime::new(Ri64, characteristic);
         let gfe = Splitting::new(&fld, irreducible);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
             let x = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
             let _z = gfe.inv(&x).unwrap();
         });
@@ -261,12 +261,12 @@ mod tests {
         let fld = Prime::new(Ri64, characteristic);
         let gfe = Splitting::new(&fld, irreducible);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
             let x = vec![
-                rng.gen::<i64>().abs() % characteristic,
-                rng.gen::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
+                rng.random::<i64>().abs() % characteristic,
             ];
             let y = gfe.pow_scalar(
                 &x,

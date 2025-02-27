@@ -158,11 +158,11 @@ mod tests {
 
     #[bench]
     fn bench_exp_by_sqr(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let m = rng.gen::<u64>() >> 32;
-        let p = rng.gen::<u64>() >> 32;
-        let x = rng.gen::<u64>() % m;
+        let m = rng.random::<u64>() >> 32;
+        let p = rng.random::<u64>() >> 32;
+        let x = rng.random::<u64>() % m;
 
         b.iter(|| {
             exp_by_sqr(&x, int_to_bits_iter(p), || 1, |a, b| (a * b) % m);
@@ -171,9 +171,9 @@ mod tests {
 
     #[bench]
     fn bench_int_to_bits(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x: u64 = rng.gen();
+        let x: u64 = rng.random();
 
         b.iter(|| {
             let _bits = int_to_bits_iter(x).collect::<Vec<bool>>();
@@ -182,9 +182,9 @@ mod tests {
 
     #[bench]
     fn bench_uint_bit_order(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<u64>() >> 25;
+        let x = rng.random::<u64>() >> 25;
 
         b.iter(|| {
             let _length = uint_bit_order(&x);
@@ -193,10 +193,10 @@ mod tests {
 
     #[bench]
     fn bench_binary_search(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let elem: u64 = rng.gen();
-        let mut arr: Vec<u64> = (0..1_000_000).map(|_| rng.gen()).collect();
+        let elem: u64 = rng.random();
+        let mut arr: Vec<u64> = (0..1_000_000).map(|_| rng.random()).collect();
         arr.sort();
 
         b.iter(|| {

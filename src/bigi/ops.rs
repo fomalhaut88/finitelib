@@ -31,7 +31,7 @@
 use std::{cmp, ops};
 
 use rand::prelude::*;
-use rand::distributions::{Distribution, Standard};
+use rand::distr::{Distribution, StandardUniform};
 
 use crate::bigi::{Bigi, BIGI_UNIT_BITS};
 use crate::utils::uint_merge;
@@ -573,10 +573,10 @@ impl<const N: usize> Bigi<N> {
 }
 
 
-impl<const N: usize> Distribution<Bigi<N>> for Standard {
+impl<const N: usize> Distribution<Bigi<N>> for StandardUniform {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Bigi<N> {
         Bigi::<N>::from_iter(
-            (0..N).map(|_| rng.gen())
+            (0..N).map(|_| rng.random())
         )
     }
 }
@@ -1105,9 +1105,9 @@ mod tests {
 
     #[bench]
     fn bench_clone(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a: Bigi<4> = rng.gen();
+        let a: Bigi<4> = rng.random();
 
         bencher.iter(|| {
             let _b = a.clone();
@@ -1116,18 +1116,18 @@ mod tests {
 
     #[bench]
     fn bench_random_256(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         bencher.iter(|| {
-            let _a: Bigi<4> = rng.gen();
+            let _a: Bigi<4> = rng.random();
         });
     }
 
     #[bench]
     fn bench_not(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a: Bigi<4> = rng.gen();
+        let a: Bigi<4> = rng.random();
 
         bencher.iter(|| {
             let _b = !&a;
@@ -1136,10 +1136,10 @@ mod tests {
 
     #[bench]
     fn bench_bitand(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = &a & &b;
@@ -1148,10 +1148,10 @@ mod tests {
 
     #[bench]
     fn bench_bitor(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = &a | &b;
@@ -1160,10 +1160,10 @@ mod tests {
 
     #[bench]
     fn bench_bitxor(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = &a ^ &b;
@@ -1172,10 +1172,10 @@ mod tests {
 
     #[bench]
     fn bench_add(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = &a + &b;
@@ -1184,10 +1184,10 @@ mod tests {
 
     #[bench]
     fn bench_sub(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = &a - &b;
@@ -1196,10 +1196,10 @@ mod tests {
 
     #[bench]
     fn bench_mul(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = Bigi::<8>::from(&rng.gen::<Bigi<4>>());
-        let b = Bigi::<8>::from(&rng.gen::<Bigi<4>>());
+        let a = Bigi::<8>::from(&rng.random::<Bigi<4>>());
+        let b = Bigi::<8>::from(&rng.random::<Bigi<4>>());
 
         bencher.iter(|| {
             let _c = &a * &b;
@@ -1208,10 +1208,10 @@ mod tests {
 
     #[bench]
     fn bench_mul_overflowing(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         bencher.iter(|| {
             let _c = a.mul_overflowing(&b);
@@ -1220,10 +1220,10 @@ mod tests {
 
     #[bench]
     fn bench_divide(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<8>>();
-        let b = Bigi::<8>::from(&rng.gen::<Bigi<4>>());
+        let a = rng.random::<Bigi<8>>();
+        let b = Bigi::<8>::from(&rng.random::<Bigi<4>>());
 
         bencher.iter(|| {
             let _c = &a * &b;
@@ -1232,10 +1232,10 @@ mod tests {
 
     #[bench]
     fn bench_divide_overflowing(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let a = rng.gen::<Bigi<4>>();
-        let b = rng.gen::<Bigi<4>>();
+        let a = rng.random::<Bigi<4>>();
+        let b = rng.random::<Bigi<4>>();
 
         let (m, e) = a.mul_overflowing(&b);
 
