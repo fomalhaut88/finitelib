@@ -24,7 +24,7 @@ use crate::bigi::rings::BigiRing;
 /// use finitelib::bigi::Bigi;
 /// use finitelib::bigi::prime::fermat_test;
 ///
-/// let mut rng = rand::thread_rng();
+/// let mut rng = rand::rng();
 ///
 /// assert_eq!(fermat_test(&mut rng, &Bigi::<4>::from_decimal("19"), 10), true);
 /// ```
@@ -54,7 +54,7 @@ pub fn fermat_test<const N: usize, R: Rng>(rng: &mut R, z: &Bigi<N>,
             let mut x = Bigi::<N>::from(0);
 
             while &x == &Bigi::<N>::from(0) { 
-                x = rng.gen();
+                x = rng.random();
                 x.rem_2k(bit_len);
                 x.divide(&z);
             }
@@ -85,7 +85,7 @@ pub fn fermat_test<const N: usize, R: Rng>(rng: &mut R, z: &Bigi<N>,
 /// use finitelib::bigi::Bigi;
 /// use finitelib::bigi::prime::miller_rabin_test;
 ///
-/// let mut rng = rand::thread_rng();
+/// let mut rng = rand::rng();
 ///
 /// assert_eq!(
 ///     miller_rabin_test(&mut rng, &Bigi::<4>::from_decimal("19"), 10), 
@@ -128,7 +128,7 @@ pub fn miller_rabin_test<const N: usize, R: Rng>(rng: &mut R, z: &Bigi<N>,
             let mut x = Bigi::<N>::from(0);
 
             while &x == &Bigi::<N>::from(0) { 
-                x = rng.gen();
+                x = rng.random();
                 x.rem_2k(bit_len);
                 x.divide(&z);
             }
@@ -176,7 +176,7 @@ pub fn miller_rabin_test<const N: usize, R: Rng>(rng: &mut R, z: &Bigi<N>,
 /// use finitelib::bigi::Bigi;
 /// use finitelib::bigi::prime::{gen_pseudoprime, miller_rabin_test};
 ///
-/// let mut rng = rand::thread_rng();
+/// let mut rng = rand::rng();
 ///
 /// let x: Bigi<4> = gen_pseudoprime(&mut rng, 256, 10);
 /// 
@@ -186,7 +186,7 @@ pub fn gen_pseudoprime<const N: usize, R: Rng>(rng: &mut R, bits: usize,
                                                count: usize) -> Bigi<N> {
     loop {
         // Generate a random number sized `bits` bits
-        let mut x: Bigi<N> = rng.gen();
+        let mut x: Bigi<N> = rng.random();
         x.rem_2k(bits);
 
         // Set first and last bits to 1
@@ -381,7 +381,7 @@ mod tests {
 
     #[test]
     fn test_fermat_test() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         assert_eq!(
             fermat_test(
@@ -426,7 +426,7 @@ mod tests {
 
     #[test]
     fn test_miller_rabin_test() {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         assert_eq!(
             miller_rabin_test(
@@ -525,7 +525,7 @@ mod tests {
 
     #[bench]
     fn bench_fermat_test(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let a = Bigi::<4>::from_decimal(
             "99893747326269902623342789505183727815353444030279517503290826441538462138393"
@@ -538,7 +538,7 @@ mod tests {
 
     #[bench]
     fn bench_miller_rabin_test(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let a = Bigi::<4>::from_decimal(
             "99893747326269902623342789505183727815353444030279517503290826441538462138393"
@@ -551,7 +551,7 @@ mod tests {
 
     #[bench]
     fn bench_gen_pseudoprime(bencher: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         bencher.iter(|| {
             let _x: Bigi<4> = gen_pseudoprime(&mut rng, 256, 100);

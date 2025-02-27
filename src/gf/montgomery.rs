@@ -214,11 +214,11 @@ mod tests {
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
-            let y = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
+            let y = rng.random::<i64>().abs() % characteristic;
 
             let _z = mgr.add(&x, &y);
         });
@@ -231,11 +231,11 @@ mod tests {
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
-            let y = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
+            let y = rng.random::<i64>().abs() % characteristic;
 
             let _z = mgr.mul(&x, &y);
         });
@@ -248,10 +248,10 @@ mod tests {
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         b.iter(|| {
-            let x = rng.gen::<i64>().abs() % characteristic;
+            let x = rng.random::<i64>().abs() % characteristic;
 
             let _z = mgr.inv(&x);
         });
@@ -264,9 +264,9 @@ mod tests {
 
         let mgr = Montgomery::new(Ri64, characteristic, power);
 
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
-        let x = rng.gen::<i64>().abs() % characteristic;
+        let x = rng.random::<i64>().abs() % characteristic;
 
         b.iter(|| {
             let y = mgr.pow_scalar(

@@ -134,8 +134,8 @@ mod tests {
         let mask = (1_u64 << degree) - 1;
         let bf = Binary::new(RXu64, 6765766665);
 
-        let mut rng = rand::thread_rng();
-        let x: u64 = rng.gen::<u64>() & mask;
+        let mut rng = rand::rng();
+        let x: u64 = rng.random::<u64>() & mask;
 
         b.iter(|| {
             let y = bf.pow_scalar(&x, utils::int_to_bits_iter(mask));

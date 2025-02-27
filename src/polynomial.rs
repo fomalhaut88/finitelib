@@ -269,10 +269,10 @@ mod tests {
 
     #[bench]
     fn bench_eval(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let x = rng.gen::<[f64; 16]>().to_vec();
+        let x = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             let _y = pf64.eval(&x, &3.0);
@@ -281,10 +281,10 @@ mod tests {
 
     #[bench]
     fn bench_neg(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let x = rng.gen::<[f64; 16]>().to_vec();
+        let x = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             let _y = pf64.neg(&x);
@@ -293,10 +293,10 @@ mod tests {
 
     #[bench]
     fn bench_neg_assign(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let mut x = rng.gen::<[f64; 16]>().to_vec();
+        let mut x = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             pf64.neg_assign(&mut x);
@@ -305,11 +305,11 @@ mod tests {
 
     #[bench]
     fn bench_add(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let x = rng.gen::<[f64; 16]>().to_vec();
-        let y = rng.gen::<[f64; 16]>().to_vec();
+        let x = rng.random::<[f64; 16]>().to_vec();
+        let y = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             pf64.add(&x, &y);
@@ -318,11 +318,11 @@ mod tests {
 
     #[bench]
     fn bench_add_assign(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let mut x = rng.gen::<[f64; 16]>().to_vec();
-        let y = rng.gen::<[f64; 16]>().to_vec();
+        let mut x = rng.random::<[f64; 16]>().to_vec();
+        let y = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             pf64.add_assign(&mut x, &y);
@@ -331,11 +331,11 @@ mod tests {
 
     #[bench]
     fn bench_mul(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let x = rng.gen::<[f64; 16]>().to_vec();
-        let y = rng.gen::<[f64; 16]>().to_vec();
+        let x = rng.random::<[f64; 16]>().to_vec();
+        let y = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             pf64.mul(&x, &y);
@@ -344,11 +344,11 @@ mod tests {
 
     #[bench]
     fn bench_divrem(b: &mut Bencher) {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let pf64 = Polynomial::new(&Ff64);
-        let x = rng.gen::<[f64; 32]>().to_vec();
-        let y = rng.gen::<[f64; 16]>().to_vec();
+        let x = rng.random::<[f64; 32]>().to_vec();
+        let y = rng.random::<[f64; 16]>().to_vec();
 
         b.iter(|| {
             let mut z = x.clone();

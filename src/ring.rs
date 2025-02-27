@@ -176,6 +176,11 @@ pub trait EuclideanRing where
         }
     }
 
+    /// Find GCD by euclidean algorithm.
+    fn euclidean(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
+        self.euclidean_extended(a, b).0
+    }
+
     /// An implementation of [the euclidean extended algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm).
     /// For given a and b it searches for x and y such that:
     /// a * x + b * y = GCD
@@ -389,7 +394,13 @@ mod tests {
     }
 
     #[test]
-    fn test() {
+    fn test_euclidean() {
+        let gcd = Ri64.euclidean(&45, &33);
+        assert_eq!(gcd, 3);
+    }
+
+    #[test]
+    fn test_euclidean_extended() {
         let (gcd, a, b) = Ri64.euclidean_extended(&45, &33);
         assert_eq!((gcd, a, b), (3, 3, -4));
         assert_eq!(45 * a + 33 * b, gcd);
