@@ -35,18 +35,23 @@ impl<T> Signed<T> {
     }
 
     /// Reference to the original value.
-    pub fn get(&self) -> &T {
+    pub fn unwrap(&self) -> &T {
         &self.0
     }
 
     /// Mutable reference to the original value.
-    pub fn get_mut(&mut self) -> &mut T {
+    pub fn unwrap_mut(&mut self) -> &mut T {
         &mut self.0
     }
 
     /// The sign.
     pub fn sign(&self) -> bool {
         self.1
+    }
+
+    /// Mutable sign.
+    pub fn sign_mut(&mut self) -> &mut bool {
+        &mut self.1
     }
 
     /// `true` if positive else `false`.

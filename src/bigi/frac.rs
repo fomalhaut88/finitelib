@@ -27,14 +27,29 @@ impl<const N: usize> Frac<N> {
         &self.0
     }
 
+    /// Get mutable numerator.
+    pub fn numerator_mut(&mut self) -> &mut Bigi<N> {
+        &mut self.0
+    }
+
     /// Get denominator.
     pub fn denominator(&self) -> &Bigi<N> {
         &self.1
     }
 
+    /// Get mutable denominator.
+    pub fn denominator_mut(&mut self) -> &mut Bigi<N> {
+        &mut self.1
+    }
+
     /// Get sign.
     pub fn sign(&self) -> bool {
         self.2
+    }
+
+    /// Mutable sign.
+    pub fn sign_mut(&mut self) -> &mut bool {
+        &mut self.2
     }
 
     /// Invert the fraction.
