@@ -523,6 +523,20 @@ mod tests {
         assert_eq!(BigiRing::<4>.mulrem(&r, &r, &p), a);
     }
 
+    #[test]
+    fn test_sqrtrem_bug_1() {
+        let p = Bigi::<4>::from_decimal(
+            "57896044618658097711785492504343953926634992332820282019728792003956564819949"
+        );
+
+        let a = Bigi::<4>::from_decimal(
+            "55827520314971205986850592395192206020226125515040097182204534991281654975746"
+        );
+
+        let r = sqrtrem(&a, &p).unwrap();
+        assert_eq!(BigiRing::<4>.mulrem(&r, &r, &p), a);
+    }
+
     #[bench]
     fn bench_fermat_test(bencher: &mut Bencher) {
         let mut rng = rand::rng();

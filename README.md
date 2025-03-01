@@ -22,13 +22,6 @@ Installation command:
 cargo add finitelib
 ```
 
-Or add this to your `Cargo.toml`:
-
-```toml
-[dependencies]
-finitelib = "0.1.8"
-```
-
 ## Basic example
 
 ```rust

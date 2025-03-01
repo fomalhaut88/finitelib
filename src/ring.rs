@@ -178,7 +178,13 @@ pub trait EuclideanRing where
 
     /// Find GCD by euclidean algorithm.
     fn euclidean(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
-        self.euclidean_extended(a, b).0
+        let mut a = a.clone();
+        let mut b = b.clone();
+        while !self.is_zero(&b) {
+            self.divrem(&mut a, &b);
+            mem::swap(&mut a, &mut b);
+        }
+        a
     }
 
     /// An implementation of [the euclidean extended algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm).

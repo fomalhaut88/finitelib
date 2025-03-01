@@ -194,7 +194,7 @@ impl<const N: usize> Bigi<N> {
         // Set `idx` in the loop below to the size considering overflow
         let mut idx = ext._get_order() + N;
 
-        // Perform plain `divide` if everflowing part is zero
+        // Perform plain `divide` if overflowing part is zero
         if idx <= N {
             return self.divide(rhs);
         }
@@ -296,29 +296,19 @@ impl<const N: usize> Bigi<N> {
                     else if pair.0 == rhs.0[order_rhs - 1] {
                         let mut res = None;
 
-                        if order_rhs - 1 > N {
-                            for i in (0..(order_rhs - 1 - N)).rev() {
-                                if ext.0[offset + i] > rhs.0[i] {
-                                    res = Some(1);
-                                    break;
-                                }
-                                if ext.0[offset + i] < rhs.0[i] {
-                                    res = Some(0);
-                                    break;
-                                }
+                        for i in (0 .. order_rhs - 1).rev() {
+                            let val = if offset + i < N {
+                                self.0[offset + i]
+                            } else {
+                                ext.0[offset + i - N]
+                            };
+                            if val > rhs.0[i] {
+                                res = Some(1);
+                                break;
                             }
-                        }
-
-                        if res.is_none() {
-                            for i in (0..cmp::min(N, order_rhs - 1)).rev() {
-                                if self.0[offset + i] > rhs.0[i] {
-                                    res = Some(1);
-                                    break;
-                                }
-                                if self.0[offset + i] < rhs.0[i] {
-                                    res = Some(0);
-                                    break;
-                                }
+                            if val < rhs.0[i] {
+                                res = Some(0);
+                                break;
                             }
                         }
 
