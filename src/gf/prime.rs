@@ -46,6 +46,16 @@ impl<T, R> Prime<T, R> {
     pub fn new(ring: R, characteristic: T) -> Self {
         Self { ring, characteristic }
     }
+
+    /// Get ring.
+    pub fn ring(&self) -> &R {
+        &self.ring
+    }
+
+    /// Get characteristic.
+    pub fn characteristic(&self) -> &T {
+        &self.characteristic
+    }
 }
 
 

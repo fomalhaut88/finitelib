@@ -48,6 +48,16 @@ impl<R: EuclideanRing> Binary<R> {
     pub fn new(ring: R, irreducible: R::Item) -> Self {
         Self { ring, irreducible }
     }
+
+    /// Get ring.
+    pub fn ring(&self) -> &R {
+        &self.ring
+    }
+
+    /// Get irreducible.
+    pub fn irreducible(&self) -> &R::Item {
+        &self.irreducible
+    }
 }
 
 

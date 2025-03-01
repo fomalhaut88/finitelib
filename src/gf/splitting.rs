@@ -63,6 +63,21 @@ impl<'a, T, F> Splitting<'a, T, F> where
         let degree = poly.degree(&irreducible).unwrap();
         Self { poly, irreducible, degree }
     }
+
+    /// Get polynomial.
+    pub fn poly(&self) -> &Polynomial<'a, F> {
+        &self.poly
+    }
+
+    /// Get irreducible.
+    pub fn irreducible(&self) -> &Vec<T> {
+        &self.irreducible
+    }
+
+    /// Get degree.
+    pub fn degree(&self) -> usize {
+        self.degree
+    }
 }
 
 
