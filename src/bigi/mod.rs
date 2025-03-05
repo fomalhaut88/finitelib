@@ -45,7 +45,7 @@ pub const BIGI_UNIT_BITS: usize = BIGI_UNIT_BYTES << 3;
 
 
 /// Bigi basic structure that is a fixed size array of `u64`.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Bigi<const N: usize>([u64; N]);
 
 
@@ -299,5 +299,14 @@ mod tests {
             "2222748650848908031820938128993338719537265726594322509944619487708154171020933436409596870357396856024737376838906180914669746523938439158164990244543059"
         );
         assert!(c.is_negative());
+    }
+
+    #[test]
+    fn test_bigi_hash() {
+        let mut set = std::collections::HashSet::new();
+        set.insert(Bigi::new([25, 0, 0, 2]));
+        set.insert(Bigi::new([25, 0, 1, 2]));
+        set.insert(Bigi::new([25, 0, 0, 2]));
+        assert_eq!(set.len(), 2);
     }
 }
