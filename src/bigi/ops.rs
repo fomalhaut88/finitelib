@@ -28,7 +28,7 @@
 //!
 //! Most of the operations support the assigned interface (`+=`, `-=`, etc).
 
-use std::{cmp, ops};
+use std::{cmp, ops, iter};
 
 use rand::prelude::*;
 use rand::distr::{Distribution, StandardUniform};
@@ -587,6 +587,13 @@ impl<const N: usize> PartialOrd for Bigi<N> {
 }
 
 
+impl<const N: usize> Ord for Bigi<N> {
+    fn cmp(&self, rhs: &Bigi<N>) -> cmp::Ordering {
+        self.partial_cmp(rhs).unwrap()
+    }
+}
+
+
 impl<const N: usize> ops::Not for &Bigi<N> {
     type Output = Bigi<N>;
 
@@ -863,6 +870,34 @@ impl<const N: usize> ops::Shl<usize> for &Bigi<N> {
 }
 
 
+impl<const N: usize> iter::Sum for Bigi<N> {
+    fn sum<I: Iterator<Item = Bigi<N>>>(it: I) -> Bigi<N> {
+        it.fold(Bigi::<N>::from(0), |s, v| &s + &v)
+    }
+}
+
+
+impl<'a, const N: usize> iter::Sum<&'a Bigi<N>> for Bigi<N> {
+    fn sum<I: Iterator<Item = &'a Bigi<N>>>(it: I) -> Bigi<N> {
+        it.fold(Bigi::<N>::from(0), |s, v| &s + v)
+    }
+}
+
+
+impl<const N: usize> iter::Product for Bigi<N> {
+    fn product<I: Iterator<Item = Bigi<N>>>(it: I) -> Bigi<N> {
+        it.fold(Bigi::<N>::from(1), |s, v| &s * &v)
+    }
+}
+
+
+impl<'a, const N: usize> iter::Product<&'a Bigi<N>> for Bigi<N> {
+    fn product<I: Iterator<Item = &'a Bigi<N>>>(it: I) -> Bigi<N> {
+        it.fold(Bigi::<N>::from(1), |s, v| &s * v)
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1091,6 +1126,40 @@ mod tests {
         assert_eq!(c, Bigi::from(25));
         assert_eq!(e, Bigi::from(0));
         assert_eq!(d, a);
+    }
+
+    #[test]
+    fn test_agg() {
+        let a = Bigi::<8>::from_decimal(
+            "20011597082245702521290087447806528763417035600728176437530042129660745583227"
+        );
+        let b = Bigi::<8>::from_decimal(
+            "19893747326269902623342789505183727815353444030279517503290826441538462138393"
+        );
+
+        let v = vec![a.clone(), b.clone()];
+        let s: Bigi<8> = v.iter().sum();
+        assert_eq!(s.to_decimal(), "39905344408515605144632876952990256578770479631007693940820868571199207721620");
+        let s: Bigi<8> = v.into_iter().sum();
+        assert_eq!(s.to_decimal(), "39905344408515605144632876952990256578770479631007693940820868571199207721620");
+    
+        let v = vec![a.clone(), b.clone()];
+        let s: Bigi<8> = v.iter().product();
+        assert_eq!(s.to_decimal(), "398105655949316029157683162537840339767936735094699854289612040283448162948749190579803666804624720023677178215273049342981008161873882543482140373534211");
+        let s: Bigi<8> = v.into_iter().product();
+        assert_eq!(s.to_decimal(), "398105655949316029157683162537840339767936735094699854289612040283448162948749190579803666804624720023677178215273049342981008161873882543482140373534211");
+    
+        let v = vec![a.clone(), b.clone()];
+        let s: &Bigi<8> = v.iter().min().unwrap();
+        assert_eq!(s.to_decimal(), "19893747326269902623342789505183727815353444030279517503290826441538462138393");
+        let s: Bigi<8> = v.into_iter().min().unwrap();
+        assert_eq!(s.to_decimal(), "19893747326269902623342789505183727815353444030279517503290826441538462138393");
+    
+        let v = vec![a.clone(), b.clone()];
+        let s: &Bigi<8> = v.iter().max().unwrap();
+        assert_eq!(s.to_decimal(), "20011597082245702521290087447806528763417035600728176437530042129660745583227");
+        let s: Bigi<8> = v.into_iter().max().unwrap();
+        assert_eq!(s.to_decimal(), "20011597082245702521290087447806528763417035600728176437530042129660745583227");
     }
 
     #[bench]

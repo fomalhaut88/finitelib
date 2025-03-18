@@ -1,6 +1,6 @@
 [package]
 name = "finitelib"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2024"
 authors = ["Alexander Khlebushchev"]
 license = "MIT"
@@ -11,3 +11,8 @@ description = "A Rust library for advanced maths over finite groups, fields, the
 
 [dependencies]
 rand = "0.9.0"
+serde = { version = "1.0.219", features = ["derive"], optional = true }
+serde_json = { version = "1.0.140", optional = true }
+
+[features]
+serde = ["dep:serde", "dep:serde_json"]
