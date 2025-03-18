@@ -36,6 +36,9 @@ pub mod prime;
 pub mod prelude;
 pub mod frac;
 
+#[cfg(feature = "serde")]
+pub mod serde;
+
 
 /// Number of bytes in `u64` block (it is 8)
 pub const BIGI_UNIT_BYTES: usize = mem::size_of::<u64>();
@@ -266,7 +269,8 @@ mod tests {
         assert_eq!(bits[192], false);
         assert_eq!(bits[193], true);
 
-        assert_eq!(Bigi::<4>::min().bit_iter().collect::<Vec<bool>>(), vec![]);
+        assert_eq!(Bigi::<4>::min().bit_iter().collect::<Vec<bool>>(), 
+                   Vec::<bool>::new());
     }
 
     #[test]

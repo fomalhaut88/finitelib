@@ -11,3 +11,8 @@ description = "A Rust library for advanced maths over finite groups, fields, the
 
 [dependencies]
 rand = "0.9.0"
+serde = { version = "1.0.219", features = ["derive"], optional = true }
+serde_json = { version = "1.0.140", optional = true }
+
+[features]
+serde = ["dep:serde", "dep:serde_json"]
