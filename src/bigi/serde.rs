@@ -28,7 +28,7 @@ impl<'de, const N: usize> Visitor<'de> for BigiVisitor<N> {
     type Value = Bigi<N>;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter.write_str("some phrase...")
+        formatter.write_str("u64 digits of bigi")
     }
 
     fn visit_seq<S: SeqAccess<'de>>(self, mut access: S) -> 
