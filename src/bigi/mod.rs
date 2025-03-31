@@ -35,6 +35,7 @@ pub mod rings;
 pub mod prime;
 pub mod prelude;
 pub mod frac;
+pub mod montgomery;
 
 #[cfg(feature = "serde")]
 pub mod serde;
