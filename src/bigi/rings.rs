@@ -11,7 +11,7 @@ use crate::bigi::Bigi;
 
 
 /// A ring for `Bigi`.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BigiRing<const N: usize>;
 
 
@@ -110,18 +110,18 @@ impl<const N: usize> EuclideanRing for BigiRing<N> {
 
     fn addrem_assign(&self, a: &mut Self::Item, b: &Self::Item, 
             m: &Self::Item) {
-        *a += b;
-        if (*a < *b) || (*a >= *m) {
+        let ovf = a.add_overflowing(b);
+        if ovf || (*a >= *m) {
             *a -= m;
         }
     }
 
     fn subrem_assign(&self, a: &mut Self::Item, b: &Self::Item, 
             m: &Self::Item) {
-        if *a < *b {
+        let ovf = a.sub_overflowing(b);
+        if ovf {
             *a += m;
         }
-        *a -= b;
     }
 
     fn mulrem_assign(&self, a: &mut Self::Item, b: &Self::Item, 

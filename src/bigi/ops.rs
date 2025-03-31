@@ -387,6 +387,9 @@ impl<const N: usize> Bigi<N> {
             (tmp, carry) = rhs.0[idx - offset].carrying_mul(factor, carry);
             (self.0[idx], overflow) = self.0[idx].borrowing_sub(tmp, overflow);
         }
+        if overflow {
+            carry += 1
+        }
         carry
     }
 
