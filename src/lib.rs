@@ -70,6 +70,7 @@ pub mod field;
 pub mod ring;
 pub mod bigi;
 pub mod polynomial;
+pub mod complex;
 pub mod common;
 pub mod gf;
 pub mod prelude;

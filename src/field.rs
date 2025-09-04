@@ -143,8 +143,9 @@ pub trait Field where
 
     /// Perform `div_assign` operation. By default it is implemented through 
     /// `div` but it can be overridden for optimization purposes.
-    fn div_assign(&self, a: &mut Self::Item, b: &Self::Item) {
-        *a = self.div(a, b).unwrap();
+    fn div_assign(&self, a: &mut Self::Item, b: &Self::Item) -> Option<()> {
+        *a = self.div(a, b)?;
+        Some(())
     }
 
     /// Perform `neg_assign` operation. By default it is implemented through 
@@ -155,8 +156,9 @@ pub trait Field where
 
     /// Perform `inv_assign` operation. By default it is implemented through 
     /// `inv` but it can be overridden for optimization purposes.
-    fn inv_assign(&self, a: &mut Self::Item) {
-        *a = self.inv(a).unwrap();
+    fn inv_assign(&self, a: &mut Self::Item) -> Option<()> {
+        *a = self.inv(a)?;
+        Some(())
     }
 
     /// Perform `mul_scalar_assign` operation. By default it is implemented  
@@ -288,7 +290,7 @@ impl<'a, F: Field> Group for FieldMulGroup<'a, F> {
     }
 
     fn neg(&self, a: &Self::Item) -> Self::Item {
-        self.field.inv(a).unwrap()
+        self.field.inv(a).expect("zero division")
     }
 
     fn mul_scalar<I>(&self, a: &Self::Item, bits_iter: I) -> Self::Item 
@@ -297,7 +299,7 @@ impl<'a, F: Field> Group for FieldMulGroup<'a, F> {
     }
 
     fn sub(&self, a: &Self::Item, b: &Self::Item) -> Self::Item {
-        self.field.div(a, b).unwrap()
+        self.field.div(a, b).expect("zero division")
     }
 
     fn add_assign(&self, a: &mut Self::Item, b: &Self::Item) {

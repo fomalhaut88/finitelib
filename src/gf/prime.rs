@@ -130,8 +130,9 @@ impl<T, R> Field for Prime<T, R> where
         self.ring.mulrem_assign(a, b, &self.characteristic);
     }
 
-    fn div_assign(&self, a: &mut Self::Item, b: &Self::Item) {
-        *a = self.div(a, b).unwrap();
+    fn div_assign(&self, a: &mut Self::Item, b: &Self::Item) -> Option<()> {
+        *a = self.div(a, b)?;
+        Some(())
     }
 
     fn neg_assign(&self, a: &mut Self::Item) {
@@ -140,8 +141,9 @@ impl<T, R> Field for Prime<T, R> where
         }
     }
 
-    fn inv_assign(&self, a: &mut Self::Item) {
-        *a = self.inv(a).unwrap();
+    fn inv_assign(&self, a: &mut Self::Item) -> Option<()> {
+        *a = self.inv(a)?;
+        Some(())
     }
 }
 

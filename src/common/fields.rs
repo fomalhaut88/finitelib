@@ -60,16 +60,27 @@ macro_rules! define_float_field {
                 *a *= *b;
             }
 
-            fn div_assign(&self, a: &mut Self::Item, b: &Self::Item) {
-                *a /= *b;
+            fn div_assign(&self, a: &mut Self::Item, 
+                                 b: &Self::Item) -> Option<()> {
+                if b != &0.0 {
+                    *a /= *b;
+                    Some(())
+                } else {
+                    None
+                }
             }
 
             fn neg_assign(&self, a: &mut Self::Item) {
                 *a = -*a;
             }
 
-            fn inv_assign(&self, a: &mut Self::Item) {
-                *a = 1.0 / *a;
+            fn inv_assign(&self, a: &mut Self::Item) -> Option<()> {
+                if a != &0.0 {
+                    *a = 1.0 / *a;
+                    Some(())
+                } else {
+                    None
+                }
             }
         }
     };
