@@ -176,14 +176,14 @@ pub trait Field where
     }
 
     /// Represent the field as a group by addition.
-    fn as_add_group(&self) -> FieldAddGroup<Self> {
+    fn as_add_group(&self) -> FieldAddGroup<'_, Self> {
         FieldAddGroup {
             field: self
         }
     }
 
     /// Represent the field as a group by multiplication.
-    fn as_mul_group(&self) -> FieldMulGroup<Self> {
+    fn as_mul_group(&self) -> FieldMulGroup<'_, Self> {
         FieldMulGroup {
             field: self
         }

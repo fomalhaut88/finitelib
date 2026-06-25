@@ -170,7 +170,7 @@ pub trait EuclideanRing where
     }
 
     /// Represent the field as a group by addition.
-    fn as_add_group(&self) -> RingAddGroup<Self> {
+    fn as_add_group(&self) -> RingAddGroup<'_, Self> {
         RingAddGroup {
             ring: self
         }
