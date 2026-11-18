@@ -59,6 +59,7 @@
 
 #![warn(missing_docs)]
 #![feature(test)]
+#![feature(bigint_helper_methods)]
 
 extern crate test;
 
